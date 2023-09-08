@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<base target="_blank">
+<link rel="stylesheet" type="text/css" href="./Qgis2threejs.css">
+<link rel="stylesheet" href="vendors/simplebar/css/simplebar.css">
+    <link rel="stylesheet" href="css/vendors/simplebar.css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/examples.css" rel="stylesheet">
+    <link href="vendors/@coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet">
+<style type="text/css">
+#popup, #header, #layerpanel {
+  left: 36px;
+}
+</style>
+<script src="./threejs/three.min.js"></script>
+<script src="./threejs/OrbitControls.js"></script>
+<script src="./threejs/ViewHelper.js"></script>
+<script src="./Qgis2threejs.js"></script>
+<script src="./threejs/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+<div id="view">
+  <div id="northarrow"></div>
+  <div id="navigation"></div>
+  <div id="viewDiv"></div>
+          <div id="topbar">
+            <button
+              class="action-button esri-icon-measure-line"
+              id="distanceButton"
+              type="button"
+              title="Measure distance between two or more points"
+            ></button>
+            <button class="action-button esri-icon-measure-area" id="areaButton" type="button" title="Measure area"></button>
+          </div>
+        <div class="sidebar sidebar-dark sidebar-fixed" id="sidebar">
+          <div class="sidebar-brand d-none d-md-flex">
+              <use xlink:href="assets/brand/coreui.svg#full"></use>
+            </svg>
+            <svg class="sidebar-brand-narrow" width="46" height="46" alt="CoreUI Logo">
+              <use xlink:href="assets/brand/coreui.svg#signet"></use>
+            </svg>
+          </div>
+          <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
+            <li class="nav-item"><a class="nav-link" href="index.html">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-speedometer"></use>
+                </svg> 노후 건축물 현황<span class="badge badge-sm bg-info ms-auto"></span></a></li>
+            <li class="nav-title">크랙 이상</li>
+            <li class="nav-item"><a class="nav-link" href="colors.html">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
+                </svg> 기울기 이상</a></li>
+            <li class="nav-item"><a class="nav-link" href="typography.html">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-pencil"></use>
+                </svg> 사진</a></li>
+            <li class="nav-title">영상 등록</li>
+            <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-puzzle"></use>
+                </svg> Coming Soon....</a>
+            </li>
+            <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-cursor"></use>
+                </svg> Coming Soon....</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="charts.html">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-chart-pie"></use>
+                </svg> Coming Soon....</a></li>
+            <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-notes"></use>
+                </svg> Coming Soon....</a>
+            </li>
+            </li>
+            <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-bell"></use>
+                </svg> Coming Soon....</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="widgets.html">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-calculator"></use>
+                </svg> Coming Soon....<span class="badge badge-sm bg-info ms-auto"></span></a></li>
+            <li class="nav-divider"></li>
+            <li class="nav-title">제작 현황</li>
+            <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+                <svg class="nav-icon">
+                  <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-star"></use>
+                </svg> Coming Soon....</a>
+            </li>
+</div>
+
+<!-- popup -->
+<div id="popup">
+  <div id="closebtn">&times;</div>
+  <div id="popupbar"></div>
+  <div id="popupbody">
+    <div id="popupcontent"></div>
+
+    <!-- query result -->
+    <div id="queryresult">
+      <table id="qr_coords_table">
+        <caption>Clicked coordinates <div id="zoomtopoint" class="action-zoom zoombtn"></div></caption>
+        <tr><td id="qr_coords"></td></tr>
+      </table>
+
+      <table id="qr_layername_table">
+        <caption>Layer <div id="zoomtolayer" class="action-zoom zoombtn"></div></caption>
+        <tr><td id="qr_layername"></td></tr>
+      </table>
+
+      <table id="qr_attrs_table">
+        <caption>Attributes</caption>
+      </table>
+
+      <!-- camera actions and measure tool -->
+      <div id="orbitbtn" class="action-btn action-orbit">Orbit</div>
+      <div id="measurebtn" class="action-btn">Measure distance</div>
+    </div>
+
+      <h1>About</h1>
+      <div id="about"><img src="./Qgis2threejs.png">
+        This page was made with <a href="https://www.qgis.org/">QGIS</a> and <a href="https://github.com/minorua/Qgis2threejs">Qgis2threejs</a> plugin (version 2.7.1).
+        <div>Powered by <a href="https://threejs.org/">three.js</a>
+        <span id="lib_proj4js"> and <a href="https://trac.osgeo.org/proj4js/">Proj4js</a></span>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- progress bar -->
+<div id="progress"><div id="progressbar"></div></div>
+
+<!-- menu -->
+<div id="toolbtns">
+  <div id="layerbtn"></div>
+  <div id="animbtn" class="hidden"></div>
+  <div id="infobtn"></div>
+</div>
+
+<!-- header and footer -->
+<div id="header"></div>
+<div id="footer"></div>
+
+<!-- layer panel -->
+<div id="layerpanel">
+  <div id="layerlist"></div>
+</div>
+
+<!-- animation -->
+<div id="narrativebox" class="ef1">
+  <div id="narbody">
+
+  </div>
+  <div id="nextbtn"></div>
+</div>
+
+<script>
+Q3D.Config.allVisible = true;
+Q3D.Config.viewpoint = {lookAt:{x:14382728.5994189,y:4278154.5502374815,z:-1346.8173102060396},pos:{x:14379963.091779018,y:4270585.493563454,z:13486.808746940169}};
+Q3D.Config.localMode = true;
+
+var container = document.getElementById("view"),
+    app = Q3D.application,
+    gui = Q3D.gui;
+
+app.init(container);       // initialize viewer
+
+// load the scene
+app.loadSceneFile("./data/index/scene.js", function (scene) {
+  // scene file has been loaded
+  app.start();
+}, function (scene) {
+  // all relevant files have been loaded
+
+});
+</script>
+</body>
+</html>
